@@ -1,11 +1,20 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
-from django.conf import settings
- 
-urlpatterns = [
-path('', views.getAll,name='home'),
-path('province/', views.getProvince,name='province'),
-path('district/', views.getDistrict,name='district'),
-path('municipality/', views.getMunicipality,name='municipality'),
-path('html-view/',views.html_view,name='html-view')
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+
+router.register("province",views.ProvinceViewSet)
+router.register("district",views.DistrictViewSet)
+router.register("municipality",views.MunicipalityViewSet)
+
+
+router_urls = [
+    path("", include(router.urls)),
 ]
+
+urlpatterns = [
+path('home/',views.html_view,name='home')
+]
+
+urlpatterns += router_urls
+

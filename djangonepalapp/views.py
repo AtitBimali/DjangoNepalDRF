@@ -1,54 +1,35 @@
 from django.shortcuts import render
-
-# Create your views here.
-
-from django.shortcuts import render
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from djangonepal.models import Province,District,Municipality
 from .serializer import ProvinceSerializer,MunicipalitySerializzer,DistrictSerializer
-import requests
-# Create your views here.
+from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from . import filters
 
-@api_view(['GET'])
-def getAll(request):
-    # # province = Province.objects.all()
-    # # district = District.objects.all()
-    # municipality = Municipality.objects.all()
-    # # provinceserializer = ProvinceSerializer(province, many=True)
-    # # districtserializer = DistrictSerializer(district, many=True)
-    # municipalityserializer = MunicipalitySerializzer(municipality, many=True)
-    api_urls={
-        'All':'/',
-        'Provinces':'/province/',
-        'District':'/district/',
-        'Municipalities':'/municipality/',
-        'Html View':'/html-veiw'
-
-    }
-    return Response(api_urls)
+class ProvinceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Province.objects.all()
+    serializer_class = ProvinceSerializer
 
 
-@api_view(['GET'])
-def getProvince(request):
-    province = Province.objects.all()
-    provinceserializer = ProvinceSerializer(province, many=True)
-    return Response(provinceserializer.data)
+class DistrictViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = District.objects.all()
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
+    serializer_class = DistrictSerializer
+    filterset_class = filters.DistrictFilter
+    serializer_class = DistrictSerializer
 
-@api_view(['GET'])
-def getDistrict(request):
-    district = District.objects.all()
-    districtserializer = DistrictSerializer(district, many=True)
-    return Response(districtserializer.data)
-    
-@api_view(['GET'])
-def getMunicipality(request):
-    municipality = Municipality.objects.all()
-    municipalityserializer = MunicipalitySerializzer(municipality, many=True)
-    return Response(municipalityserializer.data)
+class MunicipalityViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Municipality.objects.all()
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
+    filterset_class = filters.MunicipalityFilter
+
+    serializer_class = MunicipalitySerializzer
+
 
 def html_view(request):
-    url='http://127.0.0.1:8000/municipality/'
-    response = requests.get(url).json()
+    data = Municipality.objects.all()
 
-    return render(request,'djangonepalapp/index.html',{'response':response})
+    return render(request,'djangonepalapp/index.html',{'response':data})

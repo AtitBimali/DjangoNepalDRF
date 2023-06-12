@@ -1,0 +1,4 @@
+venv
+env.py
+__pycache__/
+djangonepalapp/__pycache__/
